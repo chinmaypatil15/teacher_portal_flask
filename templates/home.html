@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Teacher Portal</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</head>
+<body>
+  <header>
+    <div class="logo">tailwebs<span>.</span></div>
+    <nav>
+      <a href="#">Home</a>
+      <a href="/logout">Logout</a>
+    </nav>
+  </header>
+
+  <main>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Subject</th>
+          <th>Mark</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for student in students %}
+        <tr data-id="{{ student.id }}">
+          <td><div class="avatar">{{ student.name[0] }}</div>{{ student.name }}</td>
+          <td>{{ student.subject }}</td>
+          <td>{{ student.marks }}</td>
+          <td>
+            <div class="dropdown">
+              <button class="action-btn" onclick="toggleDropdown(this)">▼</button>
+              <div class="dropdown-menu">
+                <button onclick="updateStudent({{ student.id }})">Edit</button>
+                <button onclick="deleteStudent({{ student.id }})">Delete</button>
+              </div>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <button id="addStudentBtn" class="add-btn">Add</button>
+  </main>
+
+  <!-- Add Student Modal -->
+  <div id="addModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h3>Add New Student</h3>
+      <form id="addForm">
+        <input type="text" name="name" placeholder="Name" required>
+        <input type="text" name="subject" placeholder="Subject" required>
+        <input type="number" name="marks" placeholder="Mark" required>
+        <button type="submit">Add</button>
+      </form>
+    </div>
+  </div>
+  <!-- Edit Student Modal -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeEditModal()">&times;</span>
+      <h3>Edit Student</h3>
+      <form id="editForm">
+        <input type="hidden" name="id">
+        <input type="text" name="name" placeholder="Name" required>
+        <input type="text" name="subject" placeholder="Subject" required>
+        <input type="number" name="marks" placeholder="Mark" required>
+        <button type="submit">Update</button>
+      </form>
+    </div>
+  </div>
+
+</body>
+</html>
