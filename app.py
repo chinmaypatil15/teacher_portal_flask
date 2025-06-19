@@ -39,39 +39,6 @@ def logout():
 
 
 
-# @app.route('/add_student', methods=['POST'])
-# def add_student():
-#     if 'teacher_id' not in session:
-#         return jsonify({"status": "error", "message": "Unauthorized"}), 401
-
-#     data = request.get_json()
-    
-#     existing_student = Student.query.filter_by(
-#         name=data['name'],
-#         subject=data['subject']
-#     ).first()
-
-#     try:
-#         if existing_student:
-#             existing_student.marks += int(data['marks'])
-#             db.session.commit()
-#             return jsonify({
-#                 "status": "updated",
-#                 "new_marks": existing_student.marks
-#             })
-#         else:
-#             new_student = Student(
-#                 name=data['name'],
-#                 subject=data['subject'],
-#                 marks=data['marks']
-#             )
-#             db.session.add(new_student)
-#             db.session.commit()
-#             return jsonify({"status": "created"})
-            
-#     except Exception as e:
-#         db.session.rollback()
-#         return jsonify({"status": "error", "message": str(e)}), 400
 @app.route('/add_student', methods=['POST'])
 def add_student():
     if 'teacher_id' not in session:
@@ -80,13 +47,13 @@ def add_student():
     data = request.get_json()
     name = data['name'].strip()
     subject = data['subject'].strip()
-    marks = int(data['marks'])  # ✅ Ensure it's an integer
+    marks = int(data['marks'])  
 
     existing_student = Student.query.filter_by(name=name, subject=subject).first()
 
     try:
         if existing_student:
-            existing_student.marks += marks  # ✅ Add marks to existing
+            existing_student.marks += marks 
             db.session.commit()
             return jsonify({
                 "status": "updated",
