@@ -39,14 +39,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
             if (result.status === 'created') {
                 closeModal();
-                location.reload();
+                Swal.fire('Success', 'New student added', 'success').then(() => location.reload());
             } else if (result.status === 'updated') {
-                alert(`Marks updated. New total: ${result.new_marks}`);
                 closeModal();
-                location.reload();
+                Swal.fire('Updated', `Marks updated. New total: ${result.new_marks}`, 'success').then(() => location.reload());
             } else {
-                alert(`Error: ${result.message}`);
+                Swal.fire('Error', result.message || 'Unknown error', 'error');
             }
+
         } catch {
             alert('Failed to submit student data');
         }
@@ -55,7 +55,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Open Edit Modal with prefilled values
     window.updateStudent = function(id) {
         const row = document.querySelector(`tr[data-id='${id}']`);
-        if (!row) return alert('Student not found');
+        if (!row) {
+            Swal.fire('Error', 'Student not found', 'error');
+            return;
+        }
 
         const nameCell = row.children[0];
         const name = nameCell.querySelector('.avatar') 
@@ -92,11 +95,10 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             const result = await response.json();
             if (result.status === 'updated') {
-                alert('Update successful');
                 closeEditModal();
-                location.reload();
+                Swal.fire('Success', 'Update successful', 'success').then(() => location.reload());
             } else {
-                alert('Error updating student');
+                Swal.fire('Error', 'Error updating student', 'error');
             }
         } catch {
             alert('Failed to update student');
@@ -105,20 +107,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Delete Student
     window.deleteStudent = async function(id) {
-        if (!confirm('Are you sure?')) return;
+        const confirm = await Swal.fire({
+            title: 'Are you sure?',
+            text: "This student will be deleted.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        });
 
-        try {
-            const response = await fetch(`/delete_student/${id}`, {
-                method: 'POST'
-            });
-            const result = await response.json();
-            if (result.status === 'deleted') {
-                location.reload();
-            } else {
-                alert('Error deleting student');
+        if (confirm.isConfirmed) {
+            try {
+                const response = await fetch(`/delete_student/${id}`, { method: 'POST' });
+                const result = await response.json();
+                if (result.status === 'deleted') {
+                    Swal.fire('Deleted!', 'Student has been deleted.', 'success').then(() => location.reload());
+                } else {
+                    Swal.fire('Error', 'Error deleting student', 'error');
+                }
+            } catch {
+                Swal.fire('Error', 'Failed to delete student', 'error');
             }
-        } catch {
-            alert('Failed to delete student');
         }
     };
 

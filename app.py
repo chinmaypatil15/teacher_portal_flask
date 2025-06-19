@@ -57,8 +57,9 @@ def add_student():
             db.session.commit()
             return jsonify({
                 "status": "updated",
-                "message": f"Marks updated to {existing_student.marks}"
+                "new_marks": existing_student.marks
             })
+
         else:
             new_student = Student(name=name, subject=subject, marks=marks)
             db.session.add(new_student)
