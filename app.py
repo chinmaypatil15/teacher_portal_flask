@@ -37,37 +37,66 @@ def logout():
     session.pop('teacher_id', None)
     return redirect(url_for('index'))
 
-# Add routes for add/edit/delete later here...
 
+
+# @app.route('/add_student', methods=['POST'])
+# def add_student():
+#     if 'teacher_id' not in session:
+#         return jsonify({"status": "error", "message": "Unauthorized"}), 401
+
+#     data = request.get_json()
+    
+#     existing_student = Student.query.filter_by(
+#         name=data['name'],
+#         subject=data['subject']
+#     ).first()
+
+#     try:
+#         if existing_student:
+#             existing_student.marks += int(data['marks'])
+#             db.session.commit()
+#             return jsonify({
+#                 "status": "updated",
+#                 "new_marks": existing_student.marks
+#             })
+#         else:
+#             new_student = Student(
+#                 name=data['name'],
+#                 subject=data['subject'],
+#                 marks=data['marks']
+#             )
+#             db.session.add(new_student)
+#             db.session.commit()
+#             return jsonify({"status": "created"})
+            
+#     except Exception as e:
+#         db.session.rollback()
+#         return jsonify({"status": "error", "message": str(e)}), 400
 @app.route('/add_student', methods=['POST'])
 def add_student():
     if 'teacher_id' not in session:
         return jsonify({"status": "error", "message": "Unauthorized"}), 401
 
     data = request.get_json()
-    
-    existing_student = Student.query.filter_by(
-        name=data['name'],
-        subject=data['subject']
-    ).first()
+    name = data['name'].strip()
+    subject = data['subject'].strip()
+    marks = int(data['marks'])  # ✅ Ensure it's an integer
+
+    existing_student = Student.query.filter_by(name=name, subject=subject).first()
 
     try:
         if existing_student:
-            existing_student.marks += int(data['marks'])
+            existing_student.marks += marks  # ✅ Add marks to existing
             db.session.commit()
             return jsonify({
                 "status": "updated",
-                "new_marks": existing_student.marks
+                "message": f"Marks updated to {existing_student.marks}"
             })
         else:
-            new_student = Student(
-                name=data['name'],
-                subject=data['subject'],
-                marks=data['marks']
-            )
+            new_student = Student(name=name, subject=subject, marks=marks)
             db.session.add(new_student)
             db.session.commit()
-            return jsonify({"status": "created"})
+            return jsonify({"status": "created", "message": "Student added"})
             
     except Exception as e:
         db.session.rollback()
